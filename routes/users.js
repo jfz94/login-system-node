@@ -3,6 +3,8 @@ var router = express.Router();
 var multer = require('multer');
 var upload = multer({dest:'./uploads'});
 
+// access to user object //
+var User = require('../models/user');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -52,8 +54,24 @@ router.post('/register', upload.single('profileimage'),function(req, res, next) 
       errors: errors
     });
   }else{
-    console.log('No Errors');
-  }
+    var newUser = new User({
+      name: name,
+      email: email,
+      username: username,
+      password: password,
+      profileimage: profileImage
+    });
+
+    User.createUser(newUser,function(err,user){
+      if(err) throw err
+      console.log(user);
+    });
+
+    req.flash('success','You are now registered and can login');
+
+    res.location('/');
+    res.redirect('/');
+  } 
 
 });
 
